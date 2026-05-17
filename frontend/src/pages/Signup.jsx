@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -32,7 +33,7 @@ const Signup = () => {
           "http://localhost:3000/api/v1/sign-up",
           values,
         );
-        alert(response.data.message);
+        toast.success(response.data.message);
         setValues({
           username: "",
           email: "",
@@ -42,7 +43,7 @@ const Signup = () => {
         navigate("/login");
       }
     } catch (error) {
-      alert(error.response.data.message);
+      toast.error(error.response.data.message);
     }
   };
   return (

@@ -19,6 +19,7 @@ import Settings from "./components/Profile/Settings";
 import AllOrders from "./components/Profile/AllOrders";
 import AddBook from "./pages/AddBook";
 import UpdateBook from "./pages/UpdateBook";
+import { ToastContainer } from "react-toastify";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -62,6 +63,7 @@ const App = () => {
         <Route path="/view-book-details/:id" element={<ViewBookDetails />} />
       </Routes>
       <Footer />
+      <ToastContainer />
     </div>
   );
 };
