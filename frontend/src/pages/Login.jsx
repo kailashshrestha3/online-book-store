@@ -4,6 +4,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { authActions } from "../store/auth";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -25,10 +27,7 @@ const Login = () => {
       if (values.username === "" || values.password === "") {
         alert("Please fill all the fields");
       } else {
-        const response = await axios.post(
-          "http://localhost:3000/api/v1/sign-in",
-          values,
-        );
+        const response = await axios.post(`${BACKEND_URL}/sign-in`, values);
         dispatch(authActions.login());
         dispatch(authActions.changeRole(response.data.role));
         localStorage.setItem("id", response.data.id);

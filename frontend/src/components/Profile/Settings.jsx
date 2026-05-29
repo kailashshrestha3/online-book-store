@@ -13,12 +13,13 @@ const Settings = () => {
     authorization: `Bearer ${localStorage.getItem("token")}`,
   };
 
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
   useEffect(() => {
     const fetch = async () => {
-      const response = await axios.get(
-        "http://localhost:3000/api/v1/get-user-information",
-        { headers: headers },
-      );
+      const response = await axios.get(`${BACKEND_URL}/get-user-information`, {
+        headers: headers,
+      });
       setProfileData(response.data);
       setValue({ address: response.data.address });
     };
@@ -31,11 +32,9 @@ const Settings = () => {
   };
 
   const submitAddress = async () => {
-    const response = await axios.put(
-      "http://localhost:3000/api/v1/update-address",
-      value,
-      { headers: headers },
-    );
+    const response = await axios.put(`${BACKEND_URL}/update-address`, value, {
+      headers: headers,
+    });
     alert(response.data.message);
   };
   return (

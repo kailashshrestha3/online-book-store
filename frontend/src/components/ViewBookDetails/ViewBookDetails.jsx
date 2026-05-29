@@ -8,6 +8,8 @@ import { useSelector } from "react-redux";
 import { MdOutlineDelete } from "react-icons/md";
 import { Link } from "react-router-dom";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 const ViewBookDetails = () => {
   const { id } = useParams();
   const [data, setData] = useState();
@@ -19,9 +21,7 @@ const ViewBookDetails = () => {
 
   useEffect(() => {
     const fetch = async () => {
-      const response = await axios.get(
-        `http://localhost:3000/api/v1/get-book-by-id/${id}`,
-      );
+      const response = await axios.get(`${BACKEND_URL}/get-book-by-id/${id}`);
       // console.log(response.data.data);
       setData(response.data.data);
     };
@@ -36,7 +36,7 @@ const ViewBookDetails = () => {
 
   const handleFavorite = async () => {
     const response = await axios.put(
-      `http://localhost:3000/api/v1/add-book-to-favourite`,
+      `${BACKEND_URL}/add-book-to-favourite`,
       {},
       { headers },
     );
@@ -45,7 +45,7 @@ const ViewBookDetails = () => {
 
   const handleCart = async () => {
     const response = await axios.put(
-      `http://localhost:3000/api/v1/add-to-cart`,
+      `${BACKEND_URL}/add-to-cart`,
       {},
       { headers },
     );
@@ -53,10 +53,9 @@ const ViewBookDetails = () => {
   };
 
   const deleteBook = async () => {
-    const response = await axios.delete(
-      `http://localhost:3000/api/v1/delete-book`,
-      { headers },
-    );
+    const response = await axios.delete(`${BACKEND_URL}/delete-book`, {
+      headers,
+    });
     alert(response.data.message);
     navigate("/all-books");
   };

@@ -5,6 +5,8 @@ import { useEffect } from "react";
 import Loader from "../Loader/Loader";
 import { Link } from "react-router-dom";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 const UserOrderHistory = () => {
   const [orderHistory, setOrderHistory] = useState();
   const headers = {
@@ -14,10 +16,9 @@ const UserOrderHistory = () => {
 
   useEffect(() => {
     const fetch = async () => {
-      const response = await axios.get(
-        "http://localhost:3000/api/v1/get-order-history",
-        { headers },
-      );
+      const response = await axios.get(`${BACKEND_URL}/get-order-history`, {
+        headers,
+      });
       setOrderHistory(response.data.data);
     };
     fetch();

@@ -2,6 +2,8 @@ import axios from "axios";
 import React from "react";
 import { Link } from "react-router-dom";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 const BookCard = ({ data, favourite }) => {
   const headers = {
     id: localStorage.getItem("id"),
@@ -11,7 +13,7 @@ const BookCard = ({ data, favourite }) => {
 
   const handleRmoveBook = async () => {
     const response = await axios.put(
-      `http://localhost:3000/api/v1/remove-book-from-favourite`,
+      `${BACKEND_URL}/remove-book-from-favourite`,
       {},
       { headers },
     );

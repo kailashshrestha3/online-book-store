@@ -3,6 +3,8 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 const Signup = () => {
   const navigate = useNavigate();
 
@@ -29,10 +31,7 @@ const Signup = () => {
       ) {
         alert("Please fill all the fields");
       } else {
-        const response = await axios.post(
-          "http://localhost:3000/api/v1/sign-up",
-          values,
-        );
+        const response = await axios.post(`${BACKEND_URL}/sign-up`, values);
         toast.success(response.data.message);
         setValues({
           username: "",

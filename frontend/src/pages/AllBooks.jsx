@@ -6,6 +6,8 @@ import BookCard from "../components/BookCard/BookCard";
 import Loader from "../components/Loader/Loader";
 import { FaSearch } from "react-icons/fa";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 const AllBooks = () => {
   const [data, setData] = useState();
   const [searchQuery, setSearchQuery] = useState("");
@@ -16,9 +18,7 @@ const AllBooks = () => {
   // Fetch all books on component mount
   useEffect(() => {
     const fetch = async () => {
-      const response = await axios.get(
-        "http://localhost:3000/api/v1/get-all-books",
-      );
+      const response = await axios.get(`${BACKEND_URL}/get-all-books`);
       setData(response.data.data);
       setFilteredData(response.data.data);
 

@@ -7,6 +7,8 @@ import { Link } from "react-router-dom";
 import { IoOpenOutline } from "react-icons/io5";
 import SeeUserData from "../../pages/SeeUserData";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 const AllOrders = () => {
   const [AllOrders, setAllOrders] = useState();
   const [Options, setOptions] = useState(-1);
@@ -19,10 +21,9 @@ const AllOrders = () => {
   };
   useEffect(() => {
     const fetch = async () => {
-      const response = await axios.get(
-        "http://localhost:3000/api/v1/get-all-orders",
-        { headers },
-      );
+      const response = await axios.get(`${BACKEND_URL}/get-all-orders`, {
+        headers,
+      });
       setAllOrders(response.data.data);
     };
     fetch();
@@ -41,7 +42,7 @@ const AllOrders = () => {
   const submitChanges = async (i) => {
     const id = AllOrders[i]._id;
     const response = await axios.put(
-      `http://localhost:3000/api/v1/update-status/${id}`,
+      `${BACKEND_URL}/update-status/${id}`,
       values,
       { headers },
     );

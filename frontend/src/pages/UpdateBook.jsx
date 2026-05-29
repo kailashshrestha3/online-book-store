@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useEffect } from "react";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 const UpdateBook = () => {
   const [data, setData] = useState({
     url: "",
@@ -37,11 +38,9 @@ const UpdateBook = () => {
       ) {
         alert("Please fill all the fields");
       } else {
-        const response = await axios.put(
-          "http://localhost:3000/api/v1/update-book",
-          data,
-          { headers },
-        );
+        const response = await axios.put(`${BACKEND_URL}/update-book`, data, {
+          headers,
+        });
         setData({
           url: "",
           title: "",
@@ -60,9 +59,7 @@ const UpdateBook = () => {
 
   useEffect(() => {
     const fetch = async () => {
-      const response = await axios.get(
-        `http://localhost:3000/api/v1/get-book-by-id/${id}`,
-      );
+      const response = await axios.get(`${BACKEND_URL}/get-book-by-id/${id}`);
       // console.log(response.data.data);
       setData(response.data.data);
     };

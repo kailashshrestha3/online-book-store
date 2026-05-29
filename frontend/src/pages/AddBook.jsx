@@ -2,6 +2,8 @@ import axios from "axios";
 import React from "react";
 import { useState } from "react";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 const AddBook = () => {
   const [data, setData] = useState({
     url: "",
@@ -34,11 +36,9 @@ const AddBook = () => {
       ) {
         alert("Please fill all the fields");
       } else {
-        const response = await axios.post(
-          "http://localhost:3000/api/v1/add-book",
-          data,
-          { headers },
-        );
+        const response = await axios.post(`${BACKEND_URL}/add-book`, data, {
+          headers,
+        });
         setData({
           url: "",
           title: "",

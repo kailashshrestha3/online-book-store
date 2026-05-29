@@ -5,6 +5,8 @@ import axios from "axios";
 import Loader from "../components/Loader/Loader";
 import MobileNav from "../components/Profile/MobileNav";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 const Profile = () => {
   const [profile, setProfile] = useState();
   const headers = {
@@ -14,10 +16,9 @@ const Profile = () => {
 
   useEffect(() => {
     const fetch = async () => {
-      const response = await axios.get(
-        "http://localhost:3000/api/v1/get-user-information",
-        { headers: headers },
-      );
+      const response = await axios.get(`${BACKEND_URL}/get-user-information`, {
+        headers: headers,
+      });
       setProfile(response.data);
     };
     fetch();
