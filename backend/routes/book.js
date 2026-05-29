@@ -2,6 +2,7 @@ const router = require("express").Router();
 const { authenticateToken } = require("./userAuth");
 const User = require("../models/user");
 const Book = require("../models/book");
+const levenshtein = require("fast-levenshtein");
 
 // add book admin
 router.post("/add-book", authenticateToken, async (req, res) => {
@@ -100,47 +101,119 @@ router.get("/get-book-by-id/:id", async (req, res) => {
   }
 });
 
-// SEARCH BOOKS - Full-Text Search Algorithm using Regex
-// Algorithm: Case-insensitive regex search across multiple fields (title, author, language)
-// Time Complexity: O(n) where n is total books in database
-// Search across: title, author, language
+// SEARCH BOOKS - Fuzzy Search Algorithm using Levenshtein Distance
+// Algorithm: Fuzzy string matching with typo tolerance
+// Time Complexity: O(n * m^2) where n is total books and m is average string length
+// Features: Typo tolerance up to 5 character distance threshold
+// Searches across: title, author, language fields
 router.get("/search-books", async (req, res) => {
   try {
     const { query } = req.query;
-    
-    // Validate query parameter
+
+    // Validate query
     if (!query || query.trim() === "") {
       return res.status(400).json({
         status: "error",
-        message: "Search query is required"
+        message: "Search query is required",
       });
     }
 
-    // Create case-insensitive regex pattern for search
-    const searchPattern = new RegExp(query, "i");
+    // Clean query
+    const searchQuery = query.trim().toLowerCase();
 
-    // Search using MongoDB regex across multiple fields
-    // Using $or operator to search in title, author, and language fields
-    const books = await Book.find({
-      $or: [
-        { title: searchPattern },
-        { author: searchPattern },
-        { language: searchPattern },
-        { desc: searchPattern }
-      ]
-    }).sort({ createdAt: -1 });
+    // Get all books
+    const books = await Book.find();
 
-    // Return results
+    // Maximum typo distance allowed
+    const threshold = 5;
+
+    // Fuzzy search logic using Levenshtein distance
+    const matchedBooks = books
+      .map((book) => {
+        // Calculate distances
+        const titleDistance = levenshtein.get(
+          searchQuery,
+          book.title.toLowerCase(),
+        );
+
+        const authorDistance = levenshtein.get(
+          searchQuery,
+          book.author.toLowerCase(),
+        );
+
+        const languageDistance = levenshtein.get(
+          searchQuery,
+          book.language.toLowerCase(),
+        );
+
+        // Find smallest distance
+        const minDistance = Math.min(
+          titleDistance,
+          authorDistance,
+          languageDistance,
+        );
+
+        return {
+          ...book._doc,
+          distance: minDistance,
+        };
+      })
+
+      // Allow typo tolerance
+      .filter((book) => book.distance <= threshold)
+
+      // Sort closest matches first
+      .sort((a, b) => a.distance - b.distance);
+
+    // Response
     return res.json({
       status: "success",
-      count: books.length,
-      data: books
+      count: matchedBooks.length,
+      data: matchedBooks,
     });
-
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: "Internal Server Error" });
+
+    res.status(500).json({
+      status: "error",
+      message: "Internal Server Error",
+    });
   }
 });
 
 module.exports = router;
+
+router.post("/add-book", authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.headers.id);
+    if (user.role !== "admin") return console.log("Access denied");
+
+    const book = new Book(req.body);
+    await book.save();
+    return console.log("Book added successfully");
+  } catch (error) {
+    return console.log(error);
+  }
+});
+router.put("/update-book", authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.headers.id);
+    if (user.role !== "admin") return console.log("Access denied");
+
+    await Book.findByIdAndUpdate(req.headers.bookid, req.body);
+    return console.log("Book updated successfully");
+  } catch (error) {
+    return console.log(error);
+  }
+});
+router.delete("/delete-book", authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.headers.id);
+    if (user.role !== "admin") return console.log("Access denied");
+
+    await Book.findByIdAndDelete(req.headers.bookid);
+    return console.log("Book deleted successfully");
+  } catch (error) {
+    return console.log(error);
+  }
+});
